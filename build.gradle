@@ -1,105 +1,98 @@
 plugins {
-    id 'java-library'
-    id 'eclipse'
-    id 'idea'
-    id 'maven-publish'
-    id 'net.neoforged.moddev' version '1.0.0'
+    id 'net.neoforged.moddev' version '0.1.112'
 }
-
-tasks.named('wrapper', Wrapper).configure {
-    distributionType = Wrapper.DistributionType.BIN
-}
-
-version = mod_version
-group = mod_group_id
 
 repositories {
     mavenLocal()
+    mavenCentral()
 }
 
-base {
-    archivesName = mod_id
+sourceSets {
+    api
+    data
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
+}
+
+dependencies {
+    implementation sourceSets.api.output
+    dataImplementation sourceSets.api.output
+    dataImplementation sourceSets.main.output
+    testImplementation "org.junit.jupiter:junit-jupiter:${project.junit_version}"
+    testImplementation "net.neoforged:testframework:${project.neo_version}"
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
 
 neoForge {
     version = project.neo_version
+    addModdingDependenciesTo(sourceSets.api)
+    addModdingDependenciesTo(sourceSets.data)
 
-    parchment {
-        mappingsVersion = project.parchment_mappings_version
-        minecraftVersion = project.parchment_minecraft_version
+    mods {
+        simpleminimap {
+            sourceSet sourceSets.api
+            sourceSet sourceSets.main
+        }
+        simpleminimapdata {
+            sourceSet sourceSets.api
+            sourceSet sourceSets.main
+            sourceSet sourceSets.data
+        }
     }
+
     runs {
+        configureEach {
+            systemProperty 'forge.logging.console.level', 'debug'
+        }
         client {
             client()
         }
-
-        server {
-            server()
-            programArgument '--nogui'
-        }
-
         data {
             data()
-            programArguments.addAll '--mod', project.mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
+            sourceSet = sourceSets.data
+            mods = [neoForge.mods.simpleminimapdata]
+            programArguments = [
+                    '--mod', 'simpleminimap',
+                    '--all',
+                    '--output', file('src/generated/resources/').absolutePath,
+                    '--existing', file('src/main/resources').absolutePath
+            ]
         }
-
-        configureEach {
-            logLevel = org.slf4j.event.Level.DEBUG
+        server {
+            server()
         }
     }
 
-    mods {
-        "${mod_id}" {
-            sourceSet(sourceSets.main)
-        }
+    unitTest {
+        enable()
+        testedMod = mods.simpleminimap
     }
 }
 
-sourceSets.main.resources { srcDir 'src/generated/resources' }
-
-tasks.withType(ProcessResources).configureEach {
+tasks.named('processResources', ProcessResources) {
     var replaceProperties = [
-            minecraft_version      : minecraft_version,
-            minecraft_version_range: minecraft_version_range,
-            neo_version            : neo_version,
-            neo_version_range      : neo_version_range,
-            loader_version_range   : loader_version_range,
-            mod_id                 : mod_id,
-            mod_name               : mod_name,
-            mod_license            : mod_license,
-            mod_version            : mod_version,
-            mod_authors            : mod_authors,
-            mod_description        : mod_description
+            mc_version       : mc_version,
+            mc_version_range : mc_version_range,
+            neo_version      : neo_version,
+            neo_version_range: neo_version_range,
+            loader_version   : loader_version,
+            mod_id           : mod_id,
+            mod_version      : mod_version,
+            mod_name         : mod_name,
+            mod_authors      : mod_authors,
+            mod_credits      : mod_credits,
+            mod_logo         : mod_logo,
+            mod_description  : mod_description,
+            mod_license      : mod_license,
     ]
     inputs.properties replaceProperties
-
-    filesMatching(['META-INF/neoforge.mods.toml']) {
+    filesMatching('META-INF/neoforge.mods.toml') {
         expand replaceProperties
     }
 }
 
-publishing {
-    publications {
-        register('mavenJava', MavenPublication) {
-            from components.java
-        }
-    }
-    repositories {
-        maven {
-            url "file://${project.projectDir}/repo"
-        }
-    }
-}
-
-tasks.withType(JavaCompile).configureEach {
-    options.encoding = 'UTF-8'
-}
-
-idea {
-    module {
-        downloadSources = true
-        downloadJavadoc = true
-    }
+test {
+    useJUnitPlatform()
 }
