@@ -1,5 +1,7 @@
 package ihh.simpleminimap.api;
 
+import ihh.simpleminimap.api.storage.IMapManager;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -11,14 +13,35 @@ import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 /**
- * The api entrypoint for Simple Minimap.
+ * The api entrypoint for Simple Minimap. Get the instance using {@link #get()}.
  */
 @ApiStatus.NonExtendable
 public interface SimpleMinimapApi {
+    /**
+     * The id of the Simple Minimap mod.
+     */
     String MOD_ID = "simpleminimap";
 
+    /**
+     * @return The {@link IMapManager} instance, holding all map operations.
+     */
+    IMapManager getMapManager();
+
+    /**
+     * @return The only instance of this class.
+     */
     static SimpleMinimapApi get() {
         return InstanceHolder.INSTANCE.get();
+    }
+
+    /**
+     * Creates a {@link ResourceLocation} under the Simple Minimap mod's namespace.
+     *
+     * @param path The path of the {@link ResourceLocation}
+     * @return A {@link ResourceLocation} with the Simple Minimap mod's namespace and the given path.
+     */
+    static ResourceLocation modLoc(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
     }
 
     /**

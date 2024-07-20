@@ -7,7 +7,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 
 @Mod(value = SimpleMinimapApi.MOD_ID, dist = Dist.CLIENT)
-public class SimpleMinimap {
+public final class SimpleMinimap {
     public SimpleMinimap(IEventBus modEventBus, ModContainer modContainer) {
         EventHandler.init(modEventBus);
     }
