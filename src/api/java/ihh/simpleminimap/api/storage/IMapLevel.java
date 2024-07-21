@@ -19,11 +19,17 @@ public interface IMapLevel {
     IMapChunk get(ChunkPos pos);
 
     /**
-     * Runs the given {@link Consumer} if the {@link IMapChunk} with the given {@link ChunkPos} exists.
-     * @param pos The {@link ChunkPos} of the {@link IMapChunk} to use.
-     * @param consumer The {@link Consumer} to run.
+     * Loads the chunk at the given {@link ChunkPos} into memory.
+     * May delay loading the chunk into memory until it is fully available.
+     * @param pos The {@link ChunkPos} of the chunk to load.
      */
-    void ifPresent(ChunkPos pos, Consumer<IMapChunk> consumer);
+    void load(ChunkPos pos);
+
+    /**
+     * Removes the chunk at the given {@link ChunkPos} from memory.
+     * @param pos The {@link ChunkPos} of the chunk to remove.
+     */
+    void unload(ChunkPos pos);
 
     /**
      * @return The {@link Level} associated with this {@link IMapLevel}.

@@ -62,9 +62,9 @@ public class MapChunkRenderer {
         PoseStack stack = graphics.pose();
         Matrix4f matrix4f = stack.last().pose();
         VertexConsumer vc = graphics.bufferSource().getBuffer(renderType);
-        vc.addVertex(matrix4f, 0f, 128f, 0f).setColor(-1).setUv(0f, 1f).setLight(LightTexture.FULL_BRIGHT);
-        vc.addVertex(matrix4f, 128f, 128f, 0f).setColor(-1).setUv(1f, 1f).setLight(LightTexture.FULL_BRIGHT);
-        vc.addVertex(matrix4f, 128f, 0f, 0f).setColor(-1).setUv(1f, 0f).setLight(LightTexture.FULL_BRIGHT);
+        vc.addVertex(matrix4f, 0f, 16f, 0f).setColor(-1).setUv(0f, 1f).setLight(LightTexture.FULL_BRIGHT);
+        vc.addVertex(matrix4f, 16f, 16f, 0f).setColor(-1).setUv(1f, 1f).setLight(LightTexture.FULL_BRIGHT);
+        vc.addVertex(matrix4f, 16f, 0f, 0f).setColor(-1).setUv(1f, 0f).setLight(LightTexture.FULL_BRIGHT);
         vc.addVertex(matrix4f, 0f, 0f, 0f).setColor(-1).setUv(0f, 0f).setLight(LightTexture.FULL_BRIGHT);
     }
 

@@ -33,6 +33,19 @@ public interface IMapChunk {
     void setColor(int x, int z, int color);
 
     /**
+     * Loads the given {@link ChunkAccess} into memory as a map representation.
+     * As such, (re-)builds the internal color cache for this {@link IMapChunk}.
+     * Call this only when necessary, as it is heavy on performance.
+     * @param chunk The {@link ChunkAccess} to use to build the color cache.
+     */
+    void load(ChunkAccess chunk);
+
+    /**
+     * Called when the chunk is unloaded. Used for releasing resources.
+     */
+    void unload();
+
+    /**
      * @return The {@link IMapLevel} associated with this {@link IMapChunk}.
      */
     IMapLevel level();
@@ -43,20 +56,16 @@ public interface IMapChunk {
     ChunkPos pos();
 
     /**
-     * Called when the chunk is unloaded. Used for releasing resources.
+     * Renders the chunk to the given {@link GuiGraphics}.
+     * @param graphics The {@link GuiGraphics} to use.
+     * @param deltaTracker The {@link DeltaTracker} to use.
      */
-    void unload();
+    void render(GuiGraphics graphics, DeltaTracker deltaTracker);
 
     /**
      * @return Whether all 256 positions within the chunk have been calculated or not.
      */
     boolean isComplete();
-
-    /**
-     * (Re-)Builds the internal color cache for this {@link IMapChunk}. Call this only when necessary, as it is heavy on performance.
-     * @param chunk The {@link ChunkAccess} to use to build the color cache.
-     */
-    void rebuildColorMap(ChunkAccess chunk);
 
     /**
      * Calculates the color for the given {@link BlockState}.
@@ -66,11 +75,4 @@ public interface IMapChunk {
      * @return The color for the given {@link BlockState}.
      */
     int getColorForBlockState(BlockState state, Level level, BlockPos pos);
-
-    /**
-     * Renders the chunk to the given {@link GuiGraphics}.
-     * @param graphics The {@link GuiGraphics} to use.
-     * @param deltaTracker The {@link DeltaTracker} to use.
-     */
-    void render(GuiGraphics graphics, DeltaTracker deltaTracker);
 }

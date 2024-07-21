@@ -29,7 +29,7 @@ public class MapChunk implements IMapChunk {
     public MapChunk(ChunkPos pos, IMapLevel level, ChunkAccess chunk) {
         this.pos = pos;
         this.level = level;
-        rebuildColorMap(chunk);
+        load(chunk);
     }
 
     @Override
@@ -46,27 +46,7 @@ public class MapChunk implements IMapChunk {
     }
 
     @Override
-    public IMapLevel level() {
-        return level;
-    }
-
-    @Override
-    public ChunkPos pos() {
-        return pos;
-    }
-
-    @Override
-    public void unload() {
-        renderer.unregisterTexture();
-    }
-
-    @Override
-    public boolean isComplete() {
-        return colors.intStream().allMatch(color -> color != -1);
-    }
-
-    @Override
-    public void rebuildColorMap(ChunkAccess chunk) {
+    public void load(ChunkAccess chunk) {
         // Clear color map.
         colors.clear();
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
@@ -106,14 +86,34 @@ public class MapChunk implements IMapChunk {
     }
 
     @Override
-    public int getColorForBlockState(BlockState state, Level level, BlockPos pos) {
-        // TODO: use actual colors instead of map color
-        return state.getMapColor(level, pos).col;
+    public void unload() {
+        renderer.unregisterTexture();
+    }
+
+    @Override
+    public IMapLevel level() {
+        return level;
+    }
+
+    @Override
+    public ChunkPos pos() {
+        return pos;
     }
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
         renderer.renderChunk(graphics, deltaTracker);
+    }
+
+    @Override
+    public boolean isComplete() {
+        return colors.intStream().allMatch(color -> color != -1);
+    }
+
+    @Override
+    public int getColorForBlockState(BlockState state, Level level, BlockPos pos) {
+        // TODO: use actual colors instead of map color
+        return state.getMapColor(level, pos).col;
     }
 
     /**

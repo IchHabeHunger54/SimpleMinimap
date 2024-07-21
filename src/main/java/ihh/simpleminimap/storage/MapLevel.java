@@ -1,5 +1,6 @@
 package ihh.simpleminimap.storage;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
 import net.minecraft.client.DeltaTracker;
@@ -7,12 +8,17 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.status.ChunkStatus;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 public class MapLevel implements IMapLevel {
+    private final List<ChunkPos> chunkLoadQueue = new ArrayList<>();
     private final Map<ChunkPos, IMapChunk> mapChunks = new HashMap<>();
     private final Level level;
 
@@ -25,13 +31,24 @@ public class MapLevel implements IMapLevel {
 
     @Override
     public IMapChunk get(ChunkPos pos) {
-        mapChunks.putIfAbsent(pos, new MapChunk(pos, this, level.getChunk(pos.x, pos.z)));
+        if (!mapChunks.containsKey(pos)) load(pos);
         return mapChunks.get(pos);
     }
 
-    public void ifPresent(ChunkPos pos, Consumer<IMapChunk> consumer) {
+    @Override
+    public void load(ChunkPos pos) {
+        LevelChunk chunk = level.getChunk(pos.x, pos.z);
+        if (chunk.getPersistedStatus() == ChunkStatus.FULL) {
+            putChunk(pos, chunk);
+        } else {
+            chunkLoadQueue.add(pos);
+        }
+    }
+
+    @Override
+    public void unload(ChunkPos pos) {
         if (mapChunks.containsKey(pos)) {
-            consumer.accept(mapChunks.get(pos));
+            mapChunks.get(pos).unload();
         }
     }
 
@@ -42,7 +59,40 @@ public class MapLevel implements IMapLevel {
 
     @Override
     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-        // TODO render all chunks that should be visible
-        get(Minecraft.getInstance().player.chunkPosition()).render(graphics, deltaTracker);
+        // Construct chunks that have been fully loaded in the meantime.
+        for (ChunkPos pos : chunkLoadQueue) {
+            LevelChunk chunk = level.getChunk(pos.x, pos.z);
+            if (chunk.getPersistedStatus() == ChunkStatus.FULL) {
+                putChunk(pos, chunk);
+                chunkLoadQueue.remove(pos);
+            }
+        }
+        Minecraft minecraft = Minecraft.getInstance();
+        PoseStack stack = graphics.pose();
+        stack.pushPose();
+        // Render each chunk in both directions, within the render distance.
+        int renderDistance = minecraft.options.getEffectiveRenderDistance();
+        ChunkPos playerPos = minecraft.player.chunkPosition();
+        for (int x = -renderDistance; x <= renderDistance; x++) {
+            stack.translate(IMapChunk.CHUNK_SIZE, 0, 0);
+            stack.pushPose();
+            for (int z = -renderDistance; z <= renderDistance; z++) {
+                stack.translate(0, IMapChunk.CHUNK_SIZE, 0);
+                stack.pushPose();
+                get(new ChunkPos(playerPos.x + x, playerPos.z + z)).render(graphics, deltaTracker);
+                stack.popPose();
+            }
+            stack.popPose();
+        }
+        stack.popPose();
+    }
+
+    /**
+     * Actually puts the chunk into the map.
+     * @param pos The {@link ChunkPos} of the chunk.
+     * @param chunk The {@link ChunkAccess} to put into the map.
+     */
+    private void putChunk(ChunkPos pos, ChunkAccess chunk) {
+        mapChunks.putIfAbsent(pos, new MapChunk(pos, this, chunk));
     }
 }

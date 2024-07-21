@@ -1,7 +1,6 @@
 package ihh.simpleminimap;
 
 import ihh.simpleminimap.api.SimpleMinimapApi;
-import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.screen.MinimapLayer;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
@@ -14,6 +13,7 @@ final class EventHandler {
         IEventBus neoEventBus = NeoForge.EVENT_BUS;
         modEventBus.addListener(EventHandler::registerGuiLayers);
         neoEventBus.addListener(EventHandler::chunkLoad);
+        neoEventBus.addListener(EventHandler::chunkUnload);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
@@ -21,15 +21,14 @@ final class EventHandler {
     }
 
     private static void chunkLoad(ChunkEvent.Load event) {
-        // Load the chunk into memory.
         if (event.getLevel() instanceof Level level) {
-            SimpleMinimapApi.get().getMapManager().get(level).get(event.getChunk().getPos());
+            SimpleMinimapApi.get().getMapManager().get(level).load(event.getChunk().getPos());
         }
     }
 
     private static void chunkUnload(ChunkEvent.Unload event) {
         if (event.getLevel() instanceof Level level) {
-            SimpleMinimapApi.get().getMapManager().get(level).ifPresent(event.getChunk().getPos(), IMapChunk::unload);
+            SimpleMinimapApi.get().getMapManager().get(level).unload(event.getChunk().getPos());
         }
     }
 }
