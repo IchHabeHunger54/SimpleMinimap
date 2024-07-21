@@ -43,6 +43,11 @@ public interface IMapChunk {
     ChunkPos pos();
 
     /**
+     * Called when the chunk is unloaded. Used for releasing resources.
+     */
+    void unload();
+
+    /**
      * @return Whether all 256 positions within the chunk have been calculated or not.
      */
     boolean isComplete();

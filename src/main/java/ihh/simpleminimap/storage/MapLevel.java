@@ -10,6 +10,7 @@ import net.minecraft.world.level.Level;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class MapLevel implements IMapLevel {
     private final Map<ChunkPos, IMapChunk> mapChunks = new HashMap<>();
@@ -26,6 +27,12 @@ public class MapLevel implements IMapLevel {
     public IMapChunk get(ChunkPos pos) {
         mapChunks.putIfAbsent(pos, new MapChunk(pos, this, level.getChunk(pos.x, pos.z)));
         return mapChunks.get(pos);
+    }
+
+    public void ifPresent(ChunkPos pos, Consumer<IMapChunk> consumer) {
+        if (mapChunks.containsKey(pos)) {
+            consumer.accept(mapChunks.get(pos));
+        }
     }
 
     @Override

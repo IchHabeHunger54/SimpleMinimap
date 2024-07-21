@@ -5,6 +5,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
+import java.util.function.Consumer;
+
 /**
  * Holds map information for a {@link Level}. Get via {@link IMapManager#get(Level)}.
  */
@@ -15,6 +17,13 @@ public interface IMapLevel {
      * @return The {@link IMapChunk} for the given {@link ChunkPos}.
      */
     IMapChunk get(ChunkPos pos);
+
+    /**
+     * Runs the given {@link Consumer} if the {@link IMapChunk} with the given {@link ChunkPos} exists.
+     * @param pos The {@link ChunkPos} of the {@link IMapChunk} to use.
+     * @param consumer The {@link Consumer} to run.
+     */
+    void ifPresent(ChunkPos pos, Consumer<IMapChunk> consumer);
 
     /**
      * @return The {@link Level} associated with this {@link IMapLevel}.

@@ -14,9 +14,13 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
 import org.joml.Matrix4f;
 
+/**
+ * Class holding all functionality related to rendering a single {@link IMapChunk}.
+ */
 public class MapChunkRenderer {
     private final IMapChunk chunk;
     private DynamicTexture texture;
+    private ResourceLocation textureId;
     private RenderType renderType;
     private boolean dirty;
 
@@ -24,17 +28,28 @@ public class MapChunkRenderer {
         this.chunk = chunk;
     }
 
+    /**
+     * Creates the dynamic texture and registers it to the texture manager.
+     */
     public void registerTexture() {
         texture = new DynamicTexture(IMapChunk.CHUNK_SIZE, IMapChunk.CHUNK_SIZE, true);
-        ResourceLocation location = SimpleMinimapApi.modLoc(chunk.level().level().dimension().location().toString().replace(':', '_') + "_" + chunk.pos().toLong());
-        Minecraft.getInstance().getTextureManager().register(location, texture);
-        renderType = RenderType.text(location);
+        textureId = SimpleMinimapApi.modLoc(chunk.level().level().dimension().location().toString().replace(':', '_') + "_" + chunk.pos().toLong());
+        Minecraft.getInstance().getTextureManager().register(textureId, texture);
+        renderType = RenderType.text(textureId);
     }
 
+    /**
+     * Mark the renderer as dirty, causing the texture to be refreshed before the next render call.
+     */
     public void setDirty() {
         dirty = true;
     }
 
+    /**
+     * Renders the chunk map to the given {@link GuiGraphics}.
+     * @param graphics The {@link GuiGraphics} to use.
+     * @param deltaTracker The {@link DeltaTracker} to use.
+     */
     public void renderChunk(GuiGraphics graphics, DeltaTracker deltaTracker) {
         if (texture == null) {
             registerTexture();
@@ -53,6 +68,21 @@ public class MapChunkRenderer {
         vc.addVertex(matrix4f, 0f, 0f, 0f).setColor(-1).setUv(0f, 0f).setLight(LightTexture.FULL_BRIGHT);
     }
 
+    /**
+     * Removes the texture from the texture manager.
+     */
+    public void unregisterTexture() {
+        if (textureId != null) {
+            Minecraft.getInstance().getTextureManager().release(textureId);
+        }
+        texture = null;
+        textureId = null;
+        renderType = null;
+    }
+
+    /**
+     * Sets the pixels to the texture and sends the texture to memory.
+     */
     private void updateTexture() {
         for (int x = 0; x < IMapChunk.CHUNK_SIZE; x++) {
             for (int z = 0; z < IMapChunk.CHUNK_SIZE; z++) {

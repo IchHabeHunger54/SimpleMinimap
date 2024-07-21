@@ -56,6 +56,11 @@ public class MapChunk implements IMapChunk {
     }
 
     @Override
+    public void unload() {
+        renderer.unregisterTexture();
+    }
+
+    @Override
     public boolean isComplete() {
         return colors.intStream().allMatch(color -> color != -1);
     }
