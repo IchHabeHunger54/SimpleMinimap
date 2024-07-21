@@ -11,7 +11,10 @@ import net.minecraft.client.player.LocalPlayer;
 public class MinimapLayer implements LayeredDraw.Layer {
     @Override
     public void render(GuiGraphics guiGraphics, DeltaTracker deltaTracker) {
-        LocalPlayer player = Minecraft.getInstance().player;
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.screen != null) return;
+        if (minecraft.getDebugOverlay().showDebugScreen()) return;
+        LocalPlayer player = minecraft.player;
         IMapLevel mapLevel = SimpleMinimapApi.get().getMapManager().get(player.level());
         mapLevel.get(player.chunkPosition()).render(guiGraphics, deltaTracker);
     }

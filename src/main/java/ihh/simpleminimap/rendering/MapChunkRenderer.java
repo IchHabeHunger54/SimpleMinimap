@@ -38,6 +38,7 @@ public class MapChunkRenderer {
     public void renderChunk(GuiGraphics graphics, DeltaTracker deltaTracker) {
         if (texture == null) {
             registerTexture();
+            dirty = true;
         }
         if (dirty) {
             updateTexture();
@@ -55,7 +56,8 @@ public class MapChunkRenderer {
     private void updateTexture() {
         for (int x = 0; x < IMapChunk.CHUNK_SIZE; x++) {
             for (int z = 0; z < IMapChunk.CHUNK_SIZE; z++) {
-                texture.getPixels().setPixelRGBA(x, z, FastColor.ABGR32.opaque(chunk.getColor(x, z)));
+                int color = chunk.getColor(x, z);
+                texture.getPixels().setPixelRGBA(x, z, FastColor.ABGR32.fromArgb32(0xff000000 | color));
             }
         }
         texture.upload();

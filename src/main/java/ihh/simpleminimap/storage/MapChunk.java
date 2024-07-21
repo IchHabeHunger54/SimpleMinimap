@@ -70,7 +70,7 @@ public class MapChunk implements IMapChunk {
         // Get min and max y values from the level.
         int y = chunk.getLevel().getHeight() / 16 - 1;
         // While there are still empty spots in the chunk.
-        LevelChunkSection section = null;
+        LevelChunkSection section;
         while (!isComplete()) {
             section = chunk.getSection(y);
             // If we hit the bottom of the level, fill everything with black and break the loop.
