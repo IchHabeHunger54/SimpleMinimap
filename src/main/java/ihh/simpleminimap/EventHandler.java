@@ -17,18 +17,18 @@ final class EventHandler {
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
-        event.registerAboveAll(SimpleMinimapApi.modLoc("minimap"), new MinimapLayer());
+        event.registerAboveAll(SimpleMinimap.modLoc("minimap"), new MinimapLayer());
     }
 
     private static void chunkLoad(ChunkEvent.Load event) {
         if (event.getLevel() instanceof Level level) {
-            SimpleMinimapApi.get().getMapManager().get(level).load(event.getChunk().getPos());
+            SimpleMinimapApi.getMap(level).load(event.getChunk().getPos());
         }
     }
 
     private static void chunkUnload(ChunkEvent.Unload event) {
         if (event.getLevel() instanceof Level level) {
-            SimpleMinimapApi.get().getMapManager().get(level).unload(event.getChunk().getPos());
+            SimpleMinimapApi.getMap(level).unload(event.getChunk().getPos());
         }
     }
 }

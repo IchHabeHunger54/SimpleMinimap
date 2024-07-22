@@ -5,10 +5,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
-import java.util.function.Consumer;
-
 /**
- * Holds map information for a {@link Level}. Get via {@link IMapManager#get(Level)}.
+ * Holds map information for a {@link Level}. Get via {@link ihh.simpleminimap.api.SimpleMinimapApi#getMap(Level)}.
  */
 public interface IMapLevel {
     /**

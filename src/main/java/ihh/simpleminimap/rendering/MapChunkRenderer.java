@@ -2,7 +2,7 @@ package ihh.simpleminimap.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import ihh.simpleminimap.api.SimpleMinimapApi;
+import ihh.simpleminimap.SimpleMinimap;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
@@ -33,7 +33,7 @@ public class MapChunkRenderer {
      */
     public void registerTexture() {
         texture = new DynamicTexture(IMapChunk.CHUNK_SIZE, IMapChunk.CHUNK_SIZE, true);
-        textureId = SimpleMinimapApi.modLoc(chunk.level().level().dimension().location().toString().replace(':', '_') + "_" + chunk.pos().toLong());
+        textureId = SimpleMinimap.modLoc(chunk.level().level().dimension().location().toString().replace(':', '_') + "_" + chunk.pos().toLong());
         Minecraft.getInstance().getTextureManager().register(textureId, texture);
         renderType = RenderType.text(textureId);
     }

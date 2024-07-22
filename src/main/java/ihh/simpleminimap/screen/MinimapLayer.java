@@ -23,7 +23,7 @@ public class MinimapLayer implements LayeredDraw.Layer {
         stack.scale(scale, scale, 1);
         LocalPlayer player = minecraft.player;
         // Render the current level.
-        SimpleMinimapApi.get().getMapManager().get(player.level()).render(graphics, deltaTracker);
+        SimpleMinimapApi.getMap(player.level()).render(graphics, deltaTracker);
         stack.popPose();
     }
 }

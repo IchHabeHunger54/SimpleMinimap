@@ -1,7 +1,7 @@
 package ihh.simpleminimap.api;
 
-import ihh.simpleminimap.api.storage.IMapManager;
-import net.minecraft.resources.ResourceLocation;
+import ihh.simpleminimap.api.storage.IMapLevel;
+import net.minecraft.world.level.Level;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.common.util.Lazy;
@@ -13,42 +13,32 @@ import java.util.ServiceLoader;
 import java.util.function.Supplier;
 
 /**
- * The api entrypoint for Simple Minimap. Get the instance using {@link #get()}.
+ * The api entrypoint for Simple Minimap.
  */
 @ApiStatus.NonExtendable
-public interface SimpleMinimapApi {
+public abstract class SimpleMinimapApi {
     /**
      * The id of the Simple Minimap mod.
      */
-    String MOD_ID = "simpleminimap";
+    public static final String MOD_ID = "simpleminimap";
 
     /**
-     * @return The {@link IMapManager} instance, holding all map operations.
+     * Returns the {@link IMapLevel} for the given {@link Level}.
+     * @param level The {@link Level} to get the {@link IMapLevel} for.
+     * @return The {@link IMapLevel} for the given {@link Level}.
      */
-    IMapManager getMapManager();
-
-    /**
-     * @return The only instance of this class.
-     */
-    static SimpleMinimapApi get() {
-        return InstanceHolder.INSTANCE.get();
+    public static IMapLevel getMap(Level level) {
+        return InstanceHolder.INSTANCE.get()._getMap(level);
     }
 
-    /**
-     * Creates a {@link ResourceLocation} under the Simple Minimap mod's namespace.
-     *
-     * @param path The path of the {@link ResourceLocation}
-     * @return A {@link ResourceLocation} with the Simple Minimap mod's namespace and the given path.
-     */
-    static ResourceLocation modLoc(String path) {
-        return ResourceLocation.fromNamespaceAndPath(MOD_ID, path);
-    }
+    @ApiStatus.Internal
+    protected abstract IMapLevel _getMap(Level level);
 
     /**
      * The internal class used to hold the instances. DO NOT ACCESS YOURSELF!
      */
     @ApiStatus.Internal
-    final class InstanceHolder {
+    private static final class InstanceHolder {
         private static final Lazy<SimpleMinimapApi> INSTANCE = Lazy.of(fromServiceLoader(SimpleMinimapApi.class));
 
         private InstanceHolder() {}
