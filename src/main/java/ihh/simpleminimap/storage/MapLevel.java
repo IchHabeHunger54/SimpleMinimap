@@ -79,7 +79,10 @@ public class MapLevel implements IMapLevel {
             for (int z = -renderDistance; z <= renderDistance; z++) {
                 stack.translate(0, IMapChunk.CHUNK_SIZE, 0);
                 stack.pushPose();
-                get(new ChunkPos(playerPos.x + x, playerPos.z + z)).render(graphics, deltaTracker);
+                IMapChunk chunk = get(new ChunkPos(playerPos.x + x, playerPos.z + z));
+                if (chunk != null) {
+                    chunk.render(graphics, deltaTracker);
+                }
                 stack.popPose();
             }
             stack.popPose();
@@ -93,6 +96,6 @@ public class MapLevel implements IMapLevel {
      * @param chunk The {@link ChunkAccess} to put into the map.
      */
     private void putChunk(ChunkPos pos, ChunkAccess chunk) {
-        mapChunks.putIfAbsent(pos, new MapChunk(pos, this, chunk));
+        mapChunks.put(pos, new MapChunk(pos, this, chunk));
     }
 }
