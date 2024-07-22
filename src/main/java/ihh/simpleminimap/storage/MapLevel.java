@@ -1,11 +1,14 @@
 package ihh.simpleminimap.storage;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -67,15 +70,33 @@ public class MapLevel implements IMapLevel {
                 chunkLoadQueue.remove(pos);
             }
         }
+
         Minecraft minecraft = Minecraft.getInstance();
+        int renderDistance = minecraft.options.getEffectiveRenderDistance();
+        int guiScale = minecraft.options.guiScale().get();
+        // Calculate the player's chunk position, exact position, and x/z offsets between those two.
+        ChunkPos playerPos = minecraft.player.chunkPosition();
+        BlockPos offsetPos = minecraft.player.blockPosition().subtract(new Vec3i(playerPos.x * 16, 0, playerPos.z * 16));
+        int offsetX = offsetPos.getX();
+        int offsetZ = offsetPos.getZ();
         PoseStack stack = graphics.pose();
         stack.pushPose();
-        // Render each chunk in both directions, within the render distance.
-        int renderDistance = minecraft.options.getEffectiveRenderDistance();
-        ChunkPos playerPos = minecraft.player.chunkPosition();
-        for (int x = -renderDistance; x <= renderDistance; x++) {
+
+        // Scale the map down to a size we can work with.
+        float scale = minecraft.options.guiScale().get() / (float) renderDistance;
+        stack.scale(scale, scale, 1);
+
+        // Translate away by the position offset.
+        stack.translate(-offsetX, -offsetZ, 0);
+
+        // Enable scissoring to the exact size of the map, so we don't draw beyond the map box.
+        // (8 * guiScale * renderDistance) is the exact scissor size of a map rendered at (guiScale / renderDistance) scale.
+        graphics.enableScissor(0, 0, 8 * guiScale * renderDistance, 8 * guiScale * renderDistance);
+
+        // Render each chunk in both directions, within the render distance, plus one chunk per direction for padding.
+        for (int x = -renderDistance - 1; x <= renderDistance + 1; x++) {
             stack.pushPose();
-            for (int z = -renderDistance; z <= renderDistance; z++) {
+            for (int z = -renderDistance - 1; z <= renderDistance + 1; z++) {
                 stack.pushPose();
                 IMapChunk chunk = get(new ChunkPos(playerPos.x + x, playerPos.z + z));
                 if (chunk != null) {
@@ -87,6 +108,10 @@ public class MapLevel implements IMapLevel {
             stack.popPose();
             stack.translate(IMapChunk.CHUNK_SIZE, 0, 0);
         }
+
+        graphics.disableScissor();
+        // Undo the position offset translation from before.
+        stack.translate(offsetX, offsetZ, 0);
         stack.popPose();
     }
 
