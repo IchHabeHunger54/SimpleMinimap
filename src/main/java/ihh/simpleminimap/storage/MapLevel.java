@@ -74,18 +74,18 @@ public class MapLevel implements IMapLevel {
         int renderDistance = minecraft.options.getEffectiveRenderDistance();
         ChunkPos playerPos = minecraft.player.chunkPosition();
         for (int x = -renderDistance; x <= renderDistance; x++) {
-            stack.translate(IMapChunk.CHUNK_SIZE, 0, 0);
             stack.pushPose();
             for (int z = -renderDistance; z <= renderDistance; z++) {
-                stack.translate(0, IMapChunk.CHUNK_SIZE, 0);
                 stack.pushPose();
                 IMapChunk chunk = get(new ChunkPos(playerPos.x + x, playerPos.z + z));
                 if (chunk != null) {
                     chunk.render(graphics, deltaTracker);
                 }
                 stack.popPose();
+                stack.translate(0, IMapChunk.CHUNK_SIZE, 0);
             }
             stack.popPose();
+            stack.translate(IMapChunk.CHUNK_SIZE, 0, 0);
         }
         stack.popPose();
     }
