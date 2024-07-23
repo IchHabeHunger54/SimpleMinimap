@@ -1,5 +1,6 @@
 package ihh.simpleminimap.storage;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
@@ -80,15 +81,16 @@ public class MapLevel implements IMapLevel {
         PoseStack stack = graphics.pose();
         stack.pushPose();
 
-        // Scale the map to a size we can work with.
-        float scale = 2f; // TODO config
-        stack.scale(1 / scale, 1 / scale, 1);
-
         // Enable scissoring to the exact size of the map, so we don't draw beyond the map box.
         // (renderDistance * 16 + 8) is the exact scissor size of a map rendered at (renderDistance) scale.
-        int scissorSize = renderDistance * 16 + 8;
+        int scissorSize = renderDistance * IMapChunk.CHUNK_SIZE;
         graphics.enableScissor(0, 0, scissorSize, scissorSize);
 
+        // Scale the map to a size we can work with.
+        float scale = 1/4f; // TODO config
+        stack.scale(scale, scale, 1);
+
+        stack.pushPose();
         // Translate away by the position offset.
         stack.translate(-offsetX, -offsetZ, 0);
 
@@ -96,21 +98,20 @@ public class MapLevel implements IMapLevel {
         for (int x = -renderDistance - 1; x <= renderDistance + 1; x++) {
             stack.pushPose();
             for (int z = -renderDistance - 1; z <= renderDistance + 1; z++) {
-                stack.pushPose();
                 IMapChunk chunk = get(new ChunkPos(playerPos.x + x, playerPos.z + z));
                 if (chunk != null) {
                     chunk.render(graphics, deltaTracker);
                 }
-                stack.popPose();
                 stack.translate(0, IMapChunk.CHUNK_SIZE, 0);
             }
             stack.popPose();
             stack.translate(IMapChunk.CHUNK_SIZE, 0, 0);
         }
+        stack.popPose();
 
+        // Flush the render type of the last chunk.
+        graphics.flush();
         graphics.disableScissor();
-        // Undo the position offset translation from before.
-        stack.translate(offsetX, offsetZ, 0);
         stack.popPose();
     }
 
