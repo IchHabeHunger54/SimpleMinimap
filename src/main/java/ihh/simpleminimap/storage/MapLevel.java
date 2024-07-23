@@ -1,6 +1,5 @@
 package ihh.simpleminimap.storage;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
@@ -73,7 +72,6 @@ public class MapLevel implements IMapLevel {
 
         Minecraft minecraft = Minecraft.getInstance();
         int renderDistance = minecraft.options.getEffectiveRenderDistance();
-        int guiScale = minecraft.options.guiScale().get();
         // Calculate the player's chunk position, exact position, and x/z offsets between those two.
         ChunkPos playerPos = minecraft.player.chunkPosition();
         BlockPos offsetPos = minecraft.player.blockPosition().subtract(new Vec3i(playerPos.x * 16, 0, playerPos.z * 16));
@@ -82,16 +80,17 @@ public class MapLevel implements IMapLevel {
         PoseStack stack = graphics.pose();
         stack.pushPose();
 
-        // Scale the map down to a size we can work with.
-        float scale = minecraft.options.guiScale().get() / (float) renderDistance;
-        stack.scale(scale, scale, 1);
+        // Scale the map to a size we can work with.
+        float scale = 2f; // TODO config
+        stack.scale(1 / scale, 1 / scale, 1);
+
+        // Enable scissoring to the exact size of the map, so we don't draw beyond the map box.
+        // (renderDistance * 16 + 8) is the exact scissor size of a map rendered at (renderDistance) scale.
+        int scissorSize = renderDistance * 16 + 8;
+        graphics.enableScissor(0, 0, scissorSize, scissorSize);
 
         // Translate away by the position offset.
         stack.translate(-offsetX, -offsetZ, 0);
-
-        // Enable scissoring to the exact size of the map, so we don't draw beyond the map box.
-        // (8 * guiScale * renderDistance) is the exact scissor size of a map rendered at (guiScale / renderDistance) scale.
-        graphics.enableScissor(0, 0, 8 * guiScale * renderDistance, 8 * guiScale * renderDistance);
 
         // Render each chunk in both directions, within the render distance, plus one chunk per direction for padding.
         for (int x = -renderDistance - 1; x <= renderDistance + 1; x++) {
