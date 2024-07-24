@@ -69,6 +69,7 @@ public class MapLevel implements IMapLevel {
         }
 
         renderer.renderMap(graphics, deltaTracker);
+        renderer.renderPlayerMarker(graphics, deltaTracker);
     }
 
     /**
