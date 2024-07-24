@@ -30,7 +30,7 @@ public class MapLevelRenderer {
         this.level = level;
     }
 
-    public void renderMap(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void renderMap(GuiGraphics graphics, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         int renderDistance = minecraft.options.getEffectiveRenderDistance();
         // Calculate the player's chunk position, exact position, and x/z offsets between those two.
@@ -61,7 +61,7 @@ public class MapLevelRenderer {
             for (int z = -renderDistance - 1; z <= renderDistance + 1; z++) {
                 IMapChunk chunk = level.get(new ChunkPos(playerPos.x + x, playerPos.z + z));
                 if (chunk != null) {
-                    chunk.render(graphics, deltaTracker);
+                    chunk.render(graphics, partialTick);
                 }
                 stack.translate(0, IMapChunk.CHUNK_SIZE, 0);
             }
@@ -76,7 +76,7 @@ public class MapLevelRenderer {
         stack.popPose();
     }
 
-    public void renderPlayerMarker(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void renderPlayerMarker(GuiGraphics graphics, float partialTick) {
         Minecraft minecraft = Minecraft.getInstance();
         int renderDistance = minecraft.options.getEffectiveRenderDistance();
         LocalPlayer player = minecraft.player;

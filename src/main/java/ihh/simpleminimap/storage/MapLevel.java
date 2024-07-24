@@ -58,7 +58,7 @@ public class MapLevel implements IMapLevel {
     }
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void render(GuiGraphics graphics, float partialTick) {
         // Construct chunks that have been fully loaded in the meantime.
         for (ChunkPos pos : chunkLoadQueue) {
             LevelChunk chunk = level.getChunk(pos.x, pos.z);
@@ -68,8 +68,8 @@ public class MapLevel implements IMapLevel {
             }
         }
 
-        renderer.renderMap(graphics, deltaTracker);
-        renderer.renderPlayerMarker(graphics, deltaTracker);
+        renderer.renderMap(graphics, partialTick);
+        renderer.renderPlayerMarker(graphics, partialTick);
     }
 
     /**

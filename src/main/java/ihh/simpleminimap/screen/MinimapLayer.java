@@ -17,7 +17,7 @@ public class MinimapLayer implements LayeredDraw.Layer {
 
         PoseStack stack = graphics.pose();
         stack.pushPose();
-        SimpleMinimapApi.getMap(minecraft.player.level()).render(graphics, deltaTracker);
+        SimpleMinimapApi.getMap(minecraft.level).render(graphics, deltaTracker.getGameTimeDeltaPartialTick(minecraft.isRunning()));
         stack.popPose();
     }
 }

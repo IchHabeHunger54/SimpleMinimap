@@ -101,8 +101,8 @@ public class MapChunk implements IMapChunk {
     }
 
     @Override
-    public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-        renderer.renderChunk(graphics, deltaTracker);
+    public void render(GuiGraphics graphics, float partialTick) {
+        renderer.renderChunk(graphics, partialTick);
     }
 
     @Override

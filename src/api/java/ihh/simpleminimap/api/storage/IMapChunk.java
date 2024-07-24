@@ -58,9 +58,9 @@ public interface IMapChunk {
     /**
      * Renders the chunk to the given {@link GuiGraphics}.
      * @param graphics The {@link GuiGraphics} to use.
-     * @param deltaTracker The {@link DeltaTracker} to use.
+     * @param partialTick The partial tick amount.
      */
-    void render(GuiGraphics graphics, DeltaTracker deltaTracker);
+    void render(GuiGraphics graphics, float partialTick);
 
     /**
      * @return Whether all 256 positions within the chunk have been calculated or not.

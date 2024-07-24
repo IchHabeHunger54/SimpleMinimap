@@ -48,9 +48,9 @@ public class MapChunkRenderer {
     /**
      * Renders the chunk map to the given {@link GuiGraphics}.
      * @param graphics The {@link GuiGraphics} to use.
-     * @param deltaTracker The {@link DeltaTracker} to use.
+     * @param partialTick The partial tick amount.
      */
-    public void renderChunk(GuiGraphics graphics, DeltaTracker deltaTracker) {
+    public void renderChunk(GuiGraphics graphics, float partialTick) {
         if (texture == null) {
             registerTexture();
             dirty = true;
