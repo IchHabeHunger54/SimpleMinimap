@@ -1,7 +1,6 @@
 package ihh.simpleminimap.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import ihh.simpleminimap.Config;
 import ihh.simpleminimap.api.SimpleMinimapApi;
 import ihh.simpleminimap.api.storage.IMapChunk;

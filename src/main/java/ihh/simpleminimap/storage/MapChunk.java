@@ -5,7 +5,6 @@ import ihh.simpleminimap.api.storage.IMapLevel;
 import ihh.simpleminimap.rendering.MapChunkRenderer;
 import it.unimi.dsi.fastutil.ints.IntArrayList;
 import it.unimi.dsi.fastutil.ints.IntList;
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;

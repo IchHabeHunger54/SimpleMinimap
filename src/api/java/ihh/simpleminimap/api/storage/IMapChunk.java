@@ -1,6 +1,5 @@
 package ihh.simpleminimap.api.storage;
 
-import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;

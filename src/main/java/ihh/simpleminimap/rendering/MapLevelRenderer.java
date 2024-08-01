@@ -2,7 +2,6 @@ package ihh.simpleminimap.rendering;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
 import net.minecraft.client.Minecraft;
