@@ -24,6 +24,7 @@ final class EventHandler {
         IEventBus neoEventBus = NeoForge.EVENT_BUS;
         modEventBus.addListener(EventHandler::registerGuiLayers);
         modEventBus.addListener(EventHandler::registerKeyMappings);
+        neoEventBus.addListener(EventHandler::clientTickPost);
         neoEventBus.addListener(EventHandler::chunkLoad);
         neoEventBus.addListener(EventHandler::chunkUnload);
     }

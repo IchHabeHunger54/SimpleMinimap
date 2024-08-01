@@ -1,10 +1,13 @@
 package ihh.simpleminimap.storage;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
 import ihh.simpleminimap.rendering.MapLevelRenderer;
-import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
@@ -58,7 +61,7 @@ public class MapLevel implements IMapLevel {
     }
 
     @Override
-    public void render(GuiGraphics graphics, float partialTick) {
+    public void renderMap(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk) {
         // Construct chunks that have been fully loaded in the meantime.
         for (ChunkPos pos : chunkLoadQueue) {
             LevelChunk chunk = level.getChunk(pos.x, pos.z);
@@ -68,8 +71,26 @@ public class MapLevel implements IMapLevel {
             }
         }
 
-        renderer.renderMap(graphics, partialTick);
-        renderer.renderPlayerMarker(graphics, partialTick);
+        renderer.renderMap(graphics, partialTick, fromChunk, toChunk);
+    }
+
+    @Override
+    public void renderPlayer(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk, BlockPos pos) {
+        // Return if the pos is outside the rendered chunk range.
+        if (pos.getX() < fromChunk.x * IMapChunk.CHUNK_SIZE || pos.getX() > toChunk.x * IMapChunk.CHUNK_SIZE || pos.getZ() < fromChunk.z * IMapChunk.CHUNK_SIZE || pos.getZ() > toChunk.z * IMapChunk.CHUNK_SIZE)
+            return;
+
+        PoseStack stack = graphics.pose();
+        stack.pushPose();
+
+        // Translate to the player position.
+        stack.translate(pos.getX() - fromChunk.x * IMapChunk.CHUNK_SIZE, pos.getZ() - fromChunk.z * IMapChunk.CHUNK_SIZE, 0);
+        // Rotate to the player's rotation.
+        stack.mulPose(Axis.ZP.rotationDegrees(Minecraft.getInstance().player.getViewYRot(partialTick)));
+
+        renderer.renderPlayer(graphics, partialTick);
+
+        stack.popPose();
     }
 
     /**
