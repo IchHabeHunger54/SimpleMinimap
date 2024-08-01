@@ -1,9 +1,17 @@
 package ihh.simpleminimap;
 
+import net.neoforged.neoforge.common.ModConfigSpec;
+
 /**
  * Holds the mod's config values.
  */
 public final class Config {
-    // TODO make this an actual config, currently this is just testing values
-    public static int minimapScale = 2;
+    public static ModConfigSpec spec;
+    public static final ModConfigSpec.IntValue minimapScale;
+
+    static {
+        ModConfigSpec.Builder builder = new ModConfigSpec.Builder();
+        minimapScale = builder.defineInRange("scale", 2, 1, 16);
+        spec = builder.build();
+    }
 }

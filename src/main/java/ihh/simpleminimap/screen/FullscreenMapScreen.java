@@ -38,7 +38,7 @@ public class FullscreenMapScreen extends Screen {
         stack.translate(minecraft.getWindow().getGuiScaledWidth() / 2f, minecraft.getWindow().getGuiScaledHeight() / 2f, 0);
 
         // Scale the map to a size we can work with.
-        float scale = 1f / Config.minimapScale;
+        float scale = 1f / Config.minimapScale.get();
         stack.scale(scale, scale, 1);
 
         // Center the map on the player.

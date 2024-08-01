@@ -41,7 +41,7 @@ public class MinimapLayer implements LayeredDraw.Layer {
         graphics.enableScissor(0, 0, scissorSize, scissorSize);
 
         // Scale the map to a size we can work with.
-        float scale = 1f / Config.minimapScale;
+        float scale = 1f / Config.minimapScale.get();
         stack.scale(scale, scale, 1);
 
         // Translate away by the position offset.
