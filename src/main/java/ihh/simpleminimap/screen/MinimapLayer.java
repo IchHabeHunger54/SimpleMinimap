@@ -31,6 +31,8 @@ public class MinimapLayer implements LayeredDraw.Layer {
         BlockPos offsetPos = exactPos.subtract(new Vec3i(playerPos.x * IMapChunk.CHUNK_SIZE, 0, playerPos.z * IMapChunk.CHUNK_SIZE));
         int offsetX = offsetPos.getX();
         int offsetZ = offsetPos.getZ();
+        ChunkPos fromChunk = new ChunkPos(playerPos.x - renderDistance - 1, playerPos.z - renderDistance - 1);
+        ChunkPos toChunk = new ChunkPos(playerPos.x + renderDistance + 1, playerPos.z + renderDistance + 1);
         PoseStack stack = graphics.pose();
         stack.pushPose();
 
@@ -43,20 +45,16 @@ public class MinimapLayer implements LayeredDraw.Layer {
         float scale = 1f / Config.minimapScale;
         stack.scale(scale, scale, 1);
 
-        stack.pushPose();
         // Translate away by the position offset.
         stack.translate(-offsetX, -offsetZ, 0);
 
         IMapLevel map = SimpleMinimapApi.getMap(minecraft.level);
-        ChunkPos fromChunk = new ChunkPos(playerPos.x - renderDistance - 1, playerPos.z - renderDistance - 1);
-        ChunkPos toChunk = new ChunkPos(playerPos.x + renderDistance + 1, playerPos.z + renderDistance + 1);
         float gamePartialTick = deltaTracker.getGameTimeDeltaPartialTick(minecraft.isRunning());
         // Render the map background.
         map.renderMap(graphics, gamePartialTick, fromChunk, toChunk);
         // Render the player marker.
         map.renderPlayer(graphics, gamePartialTick, fromChunk, toChunk, exactPos);
 
-        stack.popPose();
         graphics.disableScissor();
         stack.popPose();
     }
