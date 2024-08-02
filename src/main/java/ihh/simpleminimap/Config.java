@@ -6,7 +6,7 @@ import net.neoforged.neoforge.common.ModConfigSpec;
  * Holds the mod's config values.
  */
 public final class Config {
-    public static ModConfigSpec spec;
+    public static final ModConfigSpec spec;
     public static final ModConfigSpec.IntValue minimapScale;
 
     static {

@@ -36,8 +36,8 @@ public class MinimapLayer implements LayeredDraw.Layer {
         stack.pushPose();
 
         // Enable scissoring to the exact size of the map, so we don't draw beyond the map box.
-        // (renderDistance * 16 + 8) is the exact scissor size of a map rendered at (renderDistance) scale.
-        int scissorSize = renderDistance * IMapChunk.CHUNK_SIZE + IMapChunk.CHUNK_SIZE / 2;
+        // (renderDistance * 16 + 16) is the exact scissor size of a map rendered at (renderDistance) scale.
+        int scissorSize = renderDistance * IMapChunk.CHUNK_SIZE + IMapChunk.CHUNK_SIZE;
         graphics.enableScissor(0, 0, scissorSize, scissorSize);
 
         // Scale the map to a size we can work with.
