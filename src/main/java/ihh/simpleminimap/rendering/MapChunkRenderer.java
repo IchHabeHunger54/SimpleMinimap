@@ -1,9 +1,12 @@
 package ihh.simpleminimap.rendering;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import ihh.simpleminimap.SimpleMinimap;
 import ihh.simpleminimap.api.storage.IMapChunk;
+import ihh.simpleminimap.cache.CacheManager;
+import ihh.simpleminimap.storage.MapLevel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
@@ -11,6 +14,7 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
+import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 /**
@@ -32,7 +36,7 @@ public class MapChunkRenderer {
      */
     public void registerTexture() {
         texture = new DynamicTexture(IMapChunk.CHUNK_SIZE, IMapChunk.CHUNK_SIZE, true);
-        textureId = SimpleMinimap.modLoc(chunk.level().level().dimension().location().toString().replace(':', '_') + "_" + chunk.pos().toLong());
+        textureId = SimpleMinimap.modLoc(MapLevel.levelToId(chunk.level().level()).replace(':', '_') + "_" + chunk.pos().toLong());
         Minecraft.getInstance().getTextureManager().register(textureId, texture);
         renderType = RenderType.text(textureId);
     }
@@ -90,5 +94,6 @@ public class MapChunkRenderer {
             }
         }
         texture.upload();
+        CacheManager.cache().write(chunk.pos(), texture.getPixels());
     }
 }

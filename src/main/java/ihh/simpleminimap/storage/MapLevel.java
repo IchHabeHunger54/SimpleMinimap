@@ -32,6 +32,14 @@ public class MapLevel implements IMapLevel {
         this.level = level;
     }
 
+    /**
+     * @param level The {@link Level} to convert to a string.
+     * @return The string id of the given {@link Level}.
+     */
+    public static String levelToId(Level level) {
+        return level.dimension().location().toString();
+    }
+
     @Override
     public IMapChunk get(ChunkPos pos) {
         if (!mapChunks.containsKey(pos)) load(pos);
