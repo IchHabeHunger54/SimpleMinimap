@@ -16,6 +16,9 @@ import org.joml.Matrix4f;
 
 import java.util.Optional;
 
+/**
+ * Class holding all functionality related to rendering a {@link IMapLevel}.
+ */
 public class MapLevelRenderer {
     private final IMapLevel level;
 

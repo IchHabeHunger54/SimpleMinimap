@@ -9,6 +9,9 @@ import org.jetbrains.annotations.Nullable;
 import java.io.IOException;
 import java.nio.file.Path;
 
+/**
+ * Represents the on-disk cache for a level. Get via {@link CacheManager#cache()}.
+ */
 public class LevelCache {
     private final Path cacheDirectory;
 

@@ -13,6 +13,9 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
 
+/**
+ * The fullscreen map screen. Can be opened by pressing the {@link ihh.simpleminimap.EventHandler#OPEN_MINIMAP_KEY} keybind.
+ */
 public class FullscreenMapScreen extends Screen {
     public FullscreenMapScreen() {
         super(Component.translatable(Translations.FULLSCREEN_MAP_TITLE));

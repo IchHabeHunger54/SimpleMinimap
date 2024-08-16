@@ -9,6 +9,9 @@ import org.jetbrains.annotations.ApiStatus;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * Holds the reference to the active on-disk map cache.
+ */
 public class CacheManager {
     private static final Path FOLDER_PATH = FMLPaths.getOrCreateGameRelativePath(Path.of(SimpleMinimapApi.MOD_ID));
     private static final Path INFO_FILE_PATH = FOLDER_PATH.resolve("info.txt");
@@ -22,10 +25,20 @@ public class CacheManager {
         }
     }
 
+    /**
+     * Set the active map cache to be that of the given singleplayer level.
+     * @param folderName The folder name of the corresponding world.
+     * @param level The {@link Level} to be set active.
+     */
     public static void setSingleplayerLevel(String folderName, Level level) {
         setLevel("singleplayer", folderName, level);
     }
 
+    /**
+     * Set the active map cache to be that of the given multiplayer level.
+     * @param folderName The IP address of the corresponding world.
+     * @param level The {@link Level} to be set active.
+     */
     public static void setMultiplayerLevel(String folderName, Level level) {
         setLevel("multiplayer", folderName, level);
     }
@@ -34,6 +47,9 @@ public class CacheManager {
         currentLevel = new LevelCache(FOLDER_PATH.resolve(sideFolderName).resolve(folderName).resolve(MapLevel.levelToId(level).replace(':', '_')));
     }
 
+    /**
+     * @return The currently active cache.
+     */
     public static LevelCache cache() {
         return currentLevel;
     }

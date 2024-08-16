@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.ChunkAccess;
 
 /**
- * Holds the color data for a single chunk.
+ * Holds the color data for a single chunk. Get via {@link IMapLevel#get(ChunkPos)}.
  */
 public interface IMapChunk {
     /**

@@ -1,6 +1,5 @@
 package ihh.simpleminimap.rendering;
 
-import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import ihh.simpleminimap.SimpleMinimap;
@@ -14,7 +13,6 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FastColor;
-import org.jetbrains.annotations.Nullable;
 import org.joml.Matrix4f;
 
 /**
