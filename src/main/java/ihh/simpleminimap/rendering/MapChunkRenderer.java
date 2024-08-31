@@ -1,5 +1,6 @@
 package ihh.simpleminimap.rendering;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import ihh.simpleminimap.SimpleMinimap;
@@ -23,6 +24,7 @@ public class MapChunkRenderer {
     private DynamicTexture texture;
     private ResourceLocation textureId;
     private RenderType renderType;
+    private NativeImage cachedImage;
     private boolean dirty;
 
     public MapChunkRenderer(IMapChunk chunk) {
@@ -38,11 +40,19 @@ public class MapChunkRenderer {
         Minecraft.getInstance().getTextureManager().register(textureId, texture);
         renderType = RenderType.text(textureId);
     }
-
     /**
      * Mark the renderer as dirty, causing the texture to be refreshed before the next render call.
      */
     public void setDirty() {
+        dirty = true;
+    }
+
+    /**
+     * Use the given {@link NativeImage} for rendering.
+     * @param image The {@link NativeImage} to use for rendering.
+     */
+    public void useNativeImage(NativeImage image) {
+        this.cachedImage = image;
         dirty = true;
     }
 
@@ -85,10 +95,15 @@ public class MapChunkRenderer {
      * Sets the pixels to the texture and sends the texture to memory.
      */
     private void updateTexture() {
-        for (int x = 0; x < IMapChunk.CHUNK_SIZE; x++) {
-            for (int z = 0; z < IMapChunk.CHUNK_SIZE; z++) {
-                int color = chunk.getColor(x, z);
-                texture.getPixels().setPixelRGBA(x, z, FastColor.ABGR32.fromArgb32(0xff000000 | color));
+        if (cachedImage != null) {
+            texture.setPixels(cachedImage);
+            cachedImage = null;
+        } else {
+            for (int x = 0; x < IMapChunk.CHUNK_SIZE; x++) {
+                for (int z = 0; z < IMapChunk.CHUNK_SIZE; z++) {
+                    int color = chunk.getColor(x, z);
+                    texture.getPixels().setPixelRGBA(x, z, FastColor.ABGR32.fromArgb32(0xff000000 | color));
+                }
             }
         }
         texture.upload();

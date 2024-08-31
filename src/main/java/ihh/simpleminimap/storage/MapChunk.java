@@ -1,5 +1,6 @@
 package ihh.simpleminimap.storage;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
 import ihh.simpleminimap.rendering.MapChunkRenderer;
@@ -15,9 +16,10 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
 
 public class MapChunk implements IMapChunk {
     private final IntList colors = new IntArrayList(CHUNK_SIZE * CHUNK_SIZE);
-    private final MapChunkRenderer renderer = new MapChunkRenderer(this);
+    private final MapChunkRenderer renderer;
     private final ChunkPos pos;
     private final IMapLevel level;
+    private boolean fromDisk = false;
 
     /**
      * Constructs a new {@link MapChunk} from the given {@link ChunkAccess}.
@@ -28,7 +30,22 @@ public class MapChunk implements IMapChunk {
     public MapChunk(ChunkPos pos, IMapLevel level, ChunkAccess chunk) {
         this.pos = pos;
         this.level = level;
+        renderer = new MapChunkRenderer(this);
         load(chunk);
+    }
+
+    /**
+     * Constructs a new {@link MapChunk} from the given {@link NativeImage}.
+     * @param pos The {@link ChunkPos} associated with this {@link IMapChunk}.
+     * @param level The {@link IMapLevel} associated with this {@link IMapChunk}.
+     * @param image The {@link NativeImage} to construct this {@link MapChunk} from.
+     */
+    public MapChunk(ChunkPos pos, IMapLevel level, NativeImage image) {
+        this.pos = pos;
+        this.level = level;
+        this.fromDisk = true;
+        renderer = new MapChunkRenderer(this);
+        renderer.useNativeImage(image);
     }
 
     @Override
@@ -41,11 +58,14 @@ public class MapChunk implements IMapChunk {
     public void setColor(int x, int z, int color) {
         checkBounds(x, z);
         setColorRaw(x, z, color);
+        fromDisk = false;
         renderer.setDirty();
     }
 
     @Override
     public void load(ChunkAccess chunk) {
+        // The chunk no longer matches the one on disk.
+        fromDisk = false;
         // Clear color map.
         colors.clear();
         for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
@@ -106,7 +126,7 @@ public class MapChunk implements IMapChunk {
 
     @Override
     public boolean isComplete() {
-        return colors.intStream().allMatch(color -> color != -1);
+        return fromDisk || colors.intStream().allMatch(color -> color != -1);
     }
 
     @Override

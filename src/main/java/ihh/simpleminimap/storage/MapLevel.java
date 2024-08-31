@@ -1,10 +1,13 @@
 package ihh.simpleminimap.storage;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
+import ihh.simpleminimap.cache.CacheManager;
 import ihh.simpleminimap.rendering.MapLevelRenderer;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -21,6 +24,7 @@ import java.util.Map;
 
 public class MapLevel implements IMapLevel {
     private final List<ChunkPos> chunkLoadQueue = new ArrayList<>();
+    private final List<ChunkPos> chunkConstructQueue = new ArrayList<>();
     private final Map<ChunkPos, IMapChunk> mapChunks = new HashMap<>();
     private final MapLevelRenderer renderer = new MapLevelRenderer(this);
     private final Level level;
@@ -70,12 +74,22 @@ public class MapLevel implements IMapLevel {
 
     @Override
     public void renderMap(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk) {
-        // Construct chunks that have been fully loaded in the meantime.
+        // Load available chunks from disk.
         for (ChunkPos pos : chunkLoadQueue) {
+            NativeImage image = CacheManager.cache().read(pos);
+            if (image != null) {
+                putChunk(pos, image);
+            } else {
+                chunkConstructQueue.add(pos);
+            }
+        }
+        chunkLoadQueue.clear();
+        // Construct chunks that have been fully loaded in the meantime.
+        for (ChunkPos pos : chunkConstructQueue) {
             LevelChunk chunk = level.getChunk(pos.x, pos.z);
             if (chunk.getPersistedStatus() == ChunkStatus.FULL) {
                 putChunk(pos, chunk);
-                chunkLoadQueue.remove(pos);
+                chunkConstructQueue.remove(pos);
             }
         }
 
@@ -108,5 +122,14 @@ public class MapLevel implements IMapLevel {
      */
     private void putChunk(ChunkPos pos, ChunkAccess chunk) {
         mapChunks.put(pos, new MapChunk(pos, this, chunk));
+    }
+
+    /**
+     * Actually puts the chunk into the map.
+     * @param pos The {@link ChunkPos} of the chunk.
+     * @param image The {@link NativeImage} to put into the map.
+     */
+    private void putChunk(ChunkPos pos, NativeImage image) {
+        mapChunks.put(pos, new MapChunk(pos, this, image));
     }
 }
