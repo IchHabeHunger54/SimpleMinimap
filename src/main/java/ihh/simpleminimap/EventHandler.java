@@ -8,6 +8,7 @@ import ihh.simpleminimap.screen.MinimapLayer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -20,17 +21,19 @@ import net.neoforged.neoforge.event.level.ChunkEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.Objects;
+
 final class EventHandler {
     private static final Lazy<KeyMapping> OPEN_MINIMAP_KEY = Lazy.of(() -> new KeyMapping(Translations.OPEN_MINIMAP_KEY, KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM, GLFW.GLFW_KEY_M, "key.categories.misc"));
 
-    static void init(IEventBus modEventBus) {
-        IEventBus neoEventBus = NeoForge.EVENT_BUS;
-        modEventBus.addListener(EventHandler::registerGuiLayers);
-        modEventBus.addListener(EventHandler::registerKeyMappings);
-        neoEventBus.addListener(EventHandler::clientTickPost);
-        neoEventBus.addListener(EventHandler::levelLoad);
-        neoEventBus.addListener(EventHandler::chunkLoad);
-        neoEventBus.addListener(EventHandler::chunkUnload);
+    static void init(IEventBus modBus) {
+        IEventBus neoBus = NeoForge.EVENT_BUS;
+        modBus.addListener(EventHandler::registerGuiLayers);
+        modBus.addListener(EventHandler::registerKeyMappings);
+        neoBus.addListener(EventHandler::clientTickPost);
+        neoBus.addListener(EventHandler::levelLoad);
+        neoBus.addListener(EventHandler::chunkLoad);
+        neoBus.addListener(EventHandler::chunkUnload);
     }
 
     private static void registerGuiLayers(RegisterGuiLayersEvent event) {
@@ -48,13 +51,14 @@ final class EventHandler {
     }
 
     private static void levelLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof Level level) {
-            Minecraft minecraft = Minecraft.getInstance();
-            if (minecraft.isSingleplayer()) {
-                // TODO get the singleplayer world name
-                CacheManager.setSingleplayerLevel("TODO", level);
-            }
-            ServerData server = minecraft.getCurrentServer();
+        if (!(event.getLevel() instanceof Level level)) return;
+        Minecraft mc = Minecraft.getInstance();
+        // If available, set the singleplayer folder name. Otherwise, set the multiplayer server ip.
+        if (mc.hasSingleplayerServer()) {
+            IntegratedServer server = Objects.requireNonNull(mc.getSingleplayerServer());
+            CacheManager.setSingleplayerLevel(server.storageSource.getLevelDirectory().directoryName(), level);
+        } else {
+            ServerData server = mc.getCurrentServer();
             if (server != null) {
                 CacheManager.setMultiplayerLevel(server.ip, level);
             }
