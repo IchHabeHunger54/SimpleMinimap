@@ -20,6 +20,7 @@ public class MapChunk implements IMapChunk {
     private final ChunkPos pos;
     private final IMapLevel level;
     private boolean fromDisk = false;
+    private boolean empty = true;
 
     /**
      * Constructs a new {@link MapChunk} from the given {@link ChunkAccess}.
@@ -44,6 +45,7 @@ public class MapChunk implements IMapChunk {
         this.pos = pos;
         this.level = level;
         this.fromDisk = true;
+        this.empty = false;
         renderer = new MapChunkRenderer(this);
         renderer.useNativeImage(image);
     }
@@ -77,8 +79,11 @@ public class MapChunk implements IMapChunk {
         LevelChunkSection section;
         while (!isComplete()) {
             section = chunk.getSection(y);
-            // If we hit the bottom of the level, fill everything with black and break the loop.
+            // If we hit the bottom of the level, mark as empty if applicable, fill everything with black, and break the loop.
             if (y <= 0) {
+                if (colors.intStream().allMatch(e -> e == -1)) {
+                    empty = true;
+                }
                 for (int i = 0; i < CHUNK_SIZE * CHUNK_SIZE; i++) {
                     if (colors.getInt(i) == -1) {
                         colors.set(i, 0);
@@ -95,11 +100,12 @@ public class MapChunk implements IMapChunk {
             for (int x = 0; x < CHUNK_SIZE; x++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
                     if (getColor(x, z) == -1) {
-                        setColorRaw(x, z, getColorAtSectionXZ(chunk.getLevel(), chunk.getPos(), section, y * 16 + chunk.getLevel().getMinBuildHeight(), x, z));
+                        setColorRaw(x, z, getColorAtSectionXZ(chunk.getLevel(), chunk.getPos(), section, y * CHUNK_SIZE + chunk.getLevel().getMinBuildHeight(), x, z));
                     }
                 }
             }
             y--;
+            empty = false;
         }
         renderer.setDirty();
     }
@@ -127,6 +133,11 @@ public class MapChunk implements IMapChunk {
     @Override
     public boolean isComplete() {
         return fromDisk || colors.intStream().allMatch(color -> color != -1);
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return empty;
     }
 
     @Override

@@ -67,6 +67,11 @@ public interface IMapChunk {
     boolean isComplete();
 
     /**
+     * @return Whether the chunk is empty, for example because it is a corner chunk.
+     */
+    boolean isEmpty();
+
+    /**
      * Calculates the color for the given {@link BlockState}.
      * @param state The {@link BlockState} to get the color for.
      * @param level The {@link Level} the {@link BlockState} is in.

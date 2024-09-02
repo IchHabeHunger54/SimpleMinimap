@@ -107,6 +107,8 @@ public class MapChunkRenderer {
             }
         }
         texture.upload();
-        CacheManager.cache().write(chunk.pos(), texture.getPixels());
+        if (!chunk.isEmpty()) {
+            CacheManager.cache().write(chunk.pos(), texture.getPixels());
+        }
     }
 }

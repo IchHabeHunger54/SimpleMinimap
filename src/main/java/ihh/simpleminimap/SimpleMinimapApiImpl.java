@@ -13,7 +13,9 @@ public final class SimpleMinimapApiImpl extends SimpleMinimapApi {
 
     @Override
     protected IMapLevel _getMap(Level level) {
-        mapLevels.putIfAbsent(level, new MapLevel(level));
+        if (!mapLevels.containsKey(level)) {
+            mapLevels.put(level, new MapLevel(level));
+        }
         return mapLevels.get(level);
     }
 }
