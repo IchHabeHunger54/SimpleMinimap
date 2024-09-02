@@ -4,6 +4,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * Holds map information for a {@link Level}. Get via {@link ihh.simpleminimap.api.SimpleMinimapApi#getMap(Level)}.
@@ -44,7 +45,7 @@ public interface IMapLevel {
     void renderMap(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk);
 
     /**
-     * Renders the player marker at the given {@link net.minecraft.core.BlockPos} using the given {@link GuiGraphics}.
+     * Renders the player marker at the given {@link Vec3} using the given {@link GuiGraphics}.
      * Rendering will be skipped if the player isn't actually in the visible area.
      * @param graphics The {@link GuiGraphics} to use.
      * @param partialTick The partial tick amount.
@@ -52,5 +53,5 @@ public interface IMapLevel {
      * @param toChunk The position of the bottom right chunk.
      * @param pos The position of the player.
      */
-    void renderPlayer(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk, BlockPos pos);
+    void renderPlayer(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk, Vec3 pos);
 }

@@ -9,12 +9,12 @@ import ihh.simpleminimap.cache.CacheManager;
 import ihh.simpleminimap.rendering.MapLevelRenderer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.status.ChunkStatus;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -101,16 +101,16 @@ public class MapLevel implements IMapLevel {
     }
 
     @Override
-    public void renderPlayer(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk, BlockPos pos) {
+    public void renderPlayer(GuiGraphics graphics, float partialTick, ChunkPos fromChunk, ChunkPos toChunk, Vec3 pos) {
         // Return if the pos is outside the rendered chunk range.
-        if (pos.getX() < fromChunk.x * IMapChunk.CHUNK_SIZE || pos.getX() > toChunk.x * IMapChunk.CHUNK_SIZE || pos.getZ() < fromChunk.z * IMapChunk.CHUNK_SIZE || pos.getZ() > toChunk.z * IMapChunk.CHUNK_SIZE)
+        if (pos.x() < fromChunk.x * IMapChunk.CHUNK_SIZE || pos.x() > toChunk.x * IMapChunk.CHUNK_SIZE || pos.z() < fromChunk.z * IMapChunk.CHUNK_SIZE || pos.z() > toChunk.z * IMapChunk.CHUNK_SIZE)
             return;
 
         PoseStack stack = graphics.pose();
         stack.pushPose();
 
         // Translate to the player position.
-        stack.translate(pos.getX() - fromChunk.x * IMapChunk.CHUNK_SIZE, pos.getZ() - fromChunk.z * IMapChunk.CHUNK_SIZE, 0);
+        stack.translate(pos.x() - fromChunk.x * IMapChunk.CHUNK_SIZE, pos.z() - fromChunk.z * IMapChunk.CHUNK_SIZE, 0);
         // Rotate to the player's rotation.
         stack.mulPose(Axis.ZP.rotationDegrees(Minecraft.getInstance().player.getViewYRot(partialTick)));
 

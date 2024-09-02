@@ -10,9 +10,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.LayeredDraw;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * The in-world minimap overlay.
@@ -30,10 +29,10 @@ public class MinimapLayer implements LayeredDraw.Layer {
         // Calculate the player's chunk position, exact position, and x/z offsets between those two.
         LocalPlayer player = minecraft.player;
         ChunkPos playerPos = player.chunkPosition();
-        BlockPos exactPos = player.blockPosition();
-        BlockPos offsetPos = exactPos.subtract(new Vec3i(playerPos.x * IMapChunk.CHUNK_SIZE, 0, playerPos.z * IMapChunk.CHUNK_SIZE));
-        int offsetX = offsetPos.getX();
-        int offsetZ = offsetPos.getZ();
+        Vec3 exactPos = player.position();
+        Vec3 offsetPos = exactPos.subtract(playerPos.x * IMapChunk.CHUNK_SIZE, 0, playerPos.z * IMapChunk.CHUNK_SIZE);
+        double offsetX = offsetPos.x();
+        double offsetZ = offsetPos.z();
         ChunkPos fromChunk = new ChunkPos(playerPos.x - renderDistance - 1, playerPos.z - renderDistance - 1);
         ChunkPos toChunk = new ChunkPos(playerPos.x + renderDistance + 1, playerPos.z + renderDistance + 1);
         PoseStack stack = graphics.pose();

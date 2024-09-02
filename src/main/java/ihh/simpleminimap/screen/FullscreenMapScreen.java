@@ -9,10 +9,9 @@ import ihh.simpleminimap.api.storage.IMapLevel;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Vec3i;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.phys.Vec3;
 
 /**
  * The fullscreen map screen. Can be opened by pressing the {@link ihh.simpleminimap.EventHandler#OPEN_MINIMAP_KEY} keybind.
@@ -32,10 +31,10 @@ public class FullscreenMapScreen extends Screen {
 
         LocalPlayer player = minecraft.player;
         ChunkPos playerPos = player.chunkPosition();
-        BlockPos exactPos = player.blockPosition();
-        BlockPos offsetPos = exactPos.subtract(new Vec3i(playerPos.x * IMapChunk.CHUNK_SIZE, 0, playerPos.z * IMapChunk.CHUNK_SIZE));
-        int playerOffsetX = offsetPos.getX();
-        int playerOffsetZ = offsetPos.getZ();
+        Vec3 exactPos = player.position();
+        Vec3 offsetPos = exactPos.subtract(playerPos.x * IMapChunk.CHUNK_SIZE, 0, playerPos.z * IMapChunk.CHUNK_SIZE);
+        double playerOffsetX = offsetPos.x();
+        double playerOffsetZ = offsetPos.z();
         int guiScaledWidth = minecraft.getWindow().getGuiScaledWidth();
         int guiScaledHeight = minecraft.getWindow().getGuiScaledHeight();
         double sizeOfOneChunk = (double) IMapChunk.CHUNK_SIZE / scale;
