@@ -5,9 +5,11 @@ This is a non-exhaustive list of planned features for the mod. More features and
 - Apply changed blocks
 - N/E/S/W Indicators
 - Fullscreen Map
+- Chunk Grid
 - Waypoints
 - Entity Markers
 - Accurate Block Colors
+- Nightlight and Light Sources
 - Translucency
 - Shadows
 - Underground Mapping

@@ -8,7 +8,6 @@ import ihh.simpleminimap.screen.MinimapLayer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.server.IntegratedServer;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
@@ -55,8 +54,7 @@ final class EventHandler {
         Minecraft mc = Minecraft.getInstance();
         // If available, set the singleplayer folder name. Otherwise, set the multiplayer server ip.
         if (mc.hasSingleplayerServer()) {
-            IntegratedServer server = Objects.requireNonNull(mc.getSingleplayerServer());
-            CacheManager.setSingleplayerLevel(server.storageSource.getLevelDirectory().directoryName(), level);
+            CacheManager.setSingleplayerLevel(Objects.requireNonNull(mc.getSingleplayerServer()).storageSource.getLevelDirectory().directoryName(), level);
         } else {
             ServerData server = mc.getCurrentServer();
             if (server != null) {
