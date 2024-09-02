@@ -4,7 +4,6 @@ import ihh.simpleminimap.api.SimpleMinimapApi;
 import ihh.simpleminimap.storage.MapLevel;
 import net.minecraft.world.level.Level;
 import net.neoforged.fml.loading.FMLPaths;
-import org.jetbrains.annotations.ApiStatus;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

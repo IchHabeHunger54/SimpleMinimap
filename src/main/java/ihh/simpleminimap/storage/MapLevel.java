@@ -3,13 +3,10 @@ package ihh.simpleminimap.storage;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import ihh.simpleminimap.SimpleMinimap;
 import ihh.simpleminimap.api.storage.IMapChunk;
 import ihh.simpleminimap.api.storage.IMapLevel;
 import ihh.simpleminimap.cache.CacheManager;
-import ihh.simpleminimap.cache.FileHelper;
 import ihh.simpleminimap.rendering.MapLevelRenderer;
-import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
@@ -23,7 +20,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
 
 public class MapLevel implements IMapLevel {
     private final List<ChunkPos> chunkLoadQueue = new ArrayList<>();
